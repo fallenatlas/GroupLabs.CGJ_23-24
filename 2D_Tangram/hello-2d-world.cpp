@@ -61,12 +61,41 @@ typedef struct {
   GLfloat RGBA[4];
 } Vertex;
 
+typedef struct {
+    GLubyte order[3];
+} Indice;
+
+/*
 const Vertex Vertices[] = {
     {{0.25f, 0.25f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
     {{0.75f, 0.25f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
     {{0.50f, 0.75f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}}};
 
 const GLubyte Indices[] = {0, 1, 2};
+*/
+
+const Vertex Vertices[] = {
+    // purple
+    {{0.0f, -0.25f, 0.0f, 1.0f}, {0.451f, 0.247f, 0.800f, 1.0f}},
+    {{0.25f, -0.25f, 0.0f, 1.0f}, {0.451f, 0.247f, 0.800f, 1.0f}},
+    {{0.0f, 0.0f, 0.0f, 1.0f}, {0.451f, 0.247f, 0.800f, 1.0f}},
+    // yellow
+    {{0.0f, -0.25f, 0.0f, 1.0f}, {1.0f, 0.608f, 0.153f, 1.0f}},
+    {{0.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 0.608f, 0.153f, 1.0f}},
+    {{-0.125f, 0.125f, 0.0f, 1.0f}, {1.0f, 0.608f, 0.153f, 1.0f}},
+    {{-0.125f, -0.125f, 0.0f, 1.0f}, {1.0f, 0.608f, 0.153f, 1.0f}},
+    // blue
+    {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
+    {{0.354f, 0.354f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
+    {{0.0f, 0.354f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}}
+};
+
+const GLubyte Indices[] = {
+    0, 1, 2,
+    3, 4, 6,
+    4, 5, 6,
+    7, 8, 9
+};
 
 void MyApp::createBufferObjects() {
   glGenVertexArrays(1, &VaoId);
@@ -117,13 +146,13 @@ void MyApp::drawScene() {
   Shaders->bind();
 
   glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(I));
-  glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE,
+  glDrawElements(GL_TRIANGLES, sizeof(Indices)/sizeof(GLubyte), GL_UNSIGNED_BYTE,
                  reinterpret_cast<GLvoid *>(0));
   //glDrawArrays(GL_TRIANGLES, 0, 3);
 
-  glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(M));
-  glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE,
-                 reinterpret_cast<GLvoid *>(0));
+  //glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(M));
+  //glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE,
+  //               reinterpret_cast<GLvoid *>(0));
   //glDrawArrays(GL_TRIANGLES, 0, 3);
 
   Shaders->unbind();
