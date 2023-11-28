@@ -28,7 +28,7 @@ class MyApp : public mgl::App {
 
  private:
   const GLuint POSITION = 0, COLOR = 1;
-  GLuint VaoId[2], VboId[2][2];
+  GLuint VaoId[3], VboId[3][2];
   mgl::ShaderProgram *Shaders;
   GLint MatrixId;
   GLint ColorId;
@@ -152,6 +152,18 @@ const GLubyte ParalelogramIndices[] = {
     1, 2, 3
 };
 
+const Vertex SquareVertices[] = {
+    {0.0f, 0.354f, 0.0f, 1.0f},
+    {-0.124f, 0.478f, 0.0f, 1.0f},
+    {0.124f, 0.478f, 0.0f, 1.0f},
+    {0.0f, 0.604f, 0.0f, 1.0f}
+};
+
+const GLubyte SquareIndices[] = {
+    0, 2, 1,
+    2, 3, 1
+};
+
 /*
 const Vertex SquareVertices[] = {
 
@@ -203,7 +215,7 @@ void MyApp::createBufferObjects() {
 }*/
 
 void MyApp::createBufferObjects() {
-    glGenVertexArrays(2, VaoId);
+    glGenVertexArrays(3, VaoId);
     
     glBindVertexArray(VaoId[0]);
     {
@@ -241,6 +253,24 @@ void MyApp::createBufferObjects() {
         }
     }
 
+    glBindVertexArray(VaoId[2]);
+    {
+        glGenBuffers(2, VboId[2]);
+
+        glBindBuffer(GL_ARRAY_BUFFER, VboId[2][0]);
+        {
+            glBufferData(GL_ARRAY_BUFFER, sizeof(SquareVertices), SquareVertices, GL_STATIC_DRAW);
+            glEnableVertexAttribArray(POSITION);
+            glVertexAttribPointer(POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                reinterpret_cast<GLvoid*>(0));
+        }
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VboId[2][1]);
+        {
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(SquareIndices), SquareIndices,
+                GL_STATIC_DRAW);
+        }
+    }
+
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -264,7 +294,8 @@ const glm::mat4 I(1.0f);
 const glm::mat4 M = glm::translate(glm::vec3(0.0f, 0.75f, 0.0f));
 const glm::mat4 MBlue = glm::rotate(glm::scale(glm::translate(glm::vec3(0.354f, 0.354f, 0.0f)), glm::vec3(1.416f, 1.416f, 1.416f)), -glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
 const glm::mat4 MMagenta = glm::rotate(glm::scale(glm::translate(glm::vec3(0.0f, 0.0f, 0.0f)), glm::vec3(1.416f, 1.416f, 1.416f)), glm::pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
-const glm::mat4 MAqua = glm::rotate(glm::scale(glm::translate(glm::vec3(0.0f, 0.0f, 0.0f)), glm::vec3(1.416f, 1.416f, 1.416f)), glm::pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
+const glm::mat4 MAqua = glm::scale(glm::translate(glm::vec3(-0.354f, 0.531f, 0.0f)), glm::vec3(0.708f, 0.708f, 0.708f));
+const glm::mat4 MOrange = glm::rotate(glm::scale(glm::translate(glm::vec3(0.177f, 0.354f, 0.0f)), glm::vec3(0.708f, 0.708f, 0.708f)), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
 
 //const glm::mat4 translate = glm::translate(glm::vec3(0.0f, 0.75f, 0.0f));
 
@@ -274,8 +305,12 @@ void MyApp::drawScene() {
   GLfloat triangleColor[4] = { 0.451f, 0.247f, 0.800f, 1.0f};
   GLfloat blueColor[4] = { 0.0f, 0.0f, 1.0f, 1.0f};
   GLfloat magentaColor[4] = { 0.808f, 0.172f, 0.416f, 1.0f};
+  GLfloat aquaColor[4] = { 0.0f, 0.6f, 0.6f, 1.0f};
+  GLfloat orangeColor[4] = { 1.0f, 0.25f, 0.25f, 1.0f};
   // 0, 1, 1
   GLfloat paralelogramColor[4] = { 1.0f, 0.608f, 0.153f, 1.0f};
+  //green
+  GLfloat squareColor[4] = { 0.0f, 0.6f, 0.0f, 1.0f};
 
   // purple triangle
   glBindVertexArray(VaoId[0]);
@@ -298,6 +333,18 @@ void MyApp::drawScene() {
   glDrawElements(GL_TRIANGLES, sizeof(TriangleIndices) / sizeof(GLubyte), GL_UNSIGNED_BYTE,
       reinterpret_cast<GLvoid*>(0));
 
+  //Aqua triangle
+  glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(MAqua));
+  glUniform4fv(ColorId, 1, aquaColor);
+  glDrawElements(GL_TRIANGLES, sizeof(TriangleIndices) / sizeof(GLubyte), GL_UNSIGNED_BYTE,
+      reinterpret_cast<GLvoid*>(0));
+
+  //Orange triangle
+  glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(MOrange));
+  glUniform4fv(ColorId, 1, orangeColor);
+  glDrawElements(GL_TRIANGLES, sizeof(TriangleIndices) / sizeof(GLubyte), GL_UNSIGNED_BYTE,
+      reinterpret_cast<GLvoid*>(0));
+
   // paralelogram
   glBindVertexArray(VaoId[1]);
 
@@ -305,6 +352,16 @@ void MyApp::drawScene() {
   glUniform4fv(ColorId, 1, paralelogramColor);
   glDrawElements(GL_TRIANGLES, sizeof(ParalelogramIndices) / sizeof(GLubyte), GL_UNSIGNED_BYTE,
       reinterpret_cast<GLvoid*>(0));
+
+  // square
+  glBindVertexArray(VaoId[2]);
+
+  glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(I));
+  glUniform4fv(ColorId, 1, squareColor);
+  glDrawElements(GL_TRIANGLES, sizeof(SquareIndices) / sizeof(GLubyte), GL_UNSIGNED_BYTE,
+      reinterpret_cast<GLvoid*>(0));
+
+
   //glDrawArrays(GL_TRIANGLES, 0, 3);
 
   //glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(M));
