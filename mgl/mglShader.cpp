@@ -8,6 +8,7 @@
 
 #include "./mglShader.hpp"
 
+#include <cassert>
 #include <fstream>
 
 namespace mgl {

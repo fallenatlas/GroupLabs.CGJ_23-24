@@ -17,7 +17,7 @@
 void checkOpenGLError(const std::string &function, const std::string &file,
                       int line);
 
-#ifdef _DEBUG
+#ifdef DEBUG
 #define MGL_CHECK checkOpenGLError(__FUNCTION__, __FILE__, __LINE__);
 #else
 #define MGL_CHECK
@@ -27,7 +27,7 @@ void checkOpenGLError(const std::string &function, const std::string &file,
 
 void setupDebugOutput();
 
-#ifdef _DEBUG
+#ifdef DEBUG
 #define MGL_DEBUG setupDebugOutput();
 #else
 #define MGL_DEBUG
