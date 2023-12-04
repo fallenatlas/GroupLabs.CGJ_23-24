@@ -182,6 +182,7 @@ void MyApp::destroyBufferObjects() {
 
 ////////////////////////////////////////////////////////////////////////// SCENE
 
+
 // tranformation matrices
 const glm::mat4 I(1.0f);
 const glm::mat4 MBlue = glm::rotate(glm::scale(glm::translate(glm::vec3(0.354f, 0.354f, 0.0f)), glm::vec3(1.416f, 1.416f, 1.416f)), -glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -198,9 +199,11 @@ const GLfloat orangeColor[4] = { 1.0f, 0.25f, 0.25f, 1.0f };
 const GLfloat paralelogramColor[4] = { 1.0f, 0.608f, 0.153f, 1.0f };
 const GLfloat squareColor[4] = { 0.0f, 0.6f, 0.0f, 1.0f };
 
+
 void MyApp::drawScene() {
   // Drawing directly in clip space
-
+   
+  
   // triangles
   TriangleShape->drawObject(Shaders, MatrixId, ColorId, I, purpleColor);
   TriangleShape->drawObject(Shaders, MatrixId, ColorId, MBlue, blueColor);
