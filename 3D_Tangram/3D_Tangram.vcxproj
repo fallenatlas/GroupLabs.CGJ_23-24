@@ -22,6 +22,8 @@
     <ClCompile Include="..\mgl\mglApp.cpp" />
     <ClCompile Include="..\mgl\mglCamera.cpp" />
     <ClCompile Include="..\mgl\mglError.cpp" />
+    <ClCompile Include="..\mgl\mglKeyState.cpp" />
+    <ClCompile Include="..\mgl\mglOrbitCamera.cpp" />
     <ClCompile Include="..\mgl\mglShader.cpp" />
     <ClCompile Include="hello-3d-world.cpp" />
   </ItemGroup>
@@ -35,6 +37,8 @@
     <ClInclude Include="..\mgl\mglCamera.hpp" />
     <ClInclude Include="..\mgl\mglConventions.hpp" />
     <ClInclude Include="..\mgl\mglError.hpp" />
+    <ClInclude Include="..\mgl\mglKeyState.hpp" />
+    <ClInclude Include="..\mgl\mglOrbitCamera.hpp" />
     <ClInclude Include="..\mgl\mglScenegraph.hpp" />
     <ClInclude Include="..\mgl\mglShader.hpp" />
   </ItemGroup>

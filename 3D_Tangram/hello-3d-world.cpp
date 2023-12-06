@@ -28,20 +28,80 @@ class MyApp : public mgl::App {
   void displayCallback(GLFWwindow *win, double elapsed) override;
   void windowCloseCallback(GLFWwindow *win) override;
   void windowSizeCallback(GLFWwindow *win, int width, int height) override;
+  void keyCallback(GLFWwindow* win, int key, int scancode, int action, int mods) override;
+  void cursorCallback(GLFWwindow* win, double xpos, double ypos) override;
+  void mouseButtonCallback(GLFWwindow* win, int button, int action, int mods) override;
+  void scrollCallback(GLFWwindow* win, double xoffset, double yoffset) override;
 
  private:
   const GLuint POSITION = 0, COLOR = 1, UBO_BP = 0;
   GLuint VaoId;
 
   mgl::ShaderProgram *Shaders = nullptr;
-  mgl::Camera *Camera = nullptr;
+  mgl::OrbitCamera* OrbitCameras[2] = { nullptr };
+  int activeIndex = 0;
   GLint ModelMatrixId;
+
+  double previousMousePositionX = 0;
+  double previousMousePositionY = 0;
 
   void createShaderProgram();
   void createBufferObjects();
   void destroyBufferObjects();
-  void drawScene();
+  void drawScene(double elapsed);
+  void switchCamera();
 };
+
+void MyApp::cursorCallback(GLFWwindow* win, double xpos, double ypos) {
+    if (mgl::KeyState::getInstance().isMouseButtonPressed(GLFW_MOUSE_BUTTON_1)) {
+
+        double xMoved = xpos - previousMousePositionX;
+        double yMoved = ypos - previousMousePositionY;
+        
+        double anglex = xMoved * 20;
+        double angley = yMoved * 20;
+        float yawAngle = glm::radians(anglex);
+        float pitchAngle = glm::radians(angley);
+
+        OrbitCameras[activeIndex]->addYaw(yawAngle);
+        OrbitCameras[activeIndex]->addPitch(pitchAngle);
+    }
+    previousMousePositionX = xpos;
+    previousMousePositionY = ypos;
+}
+
+void MyApp::mouseButtonCallback(GLFWwindow* win, int button, int action,
+    int mods) {
+    mgl::KeyState::getInstance().updateMouseButtonState(button, action);
+}
+
+void MyApp::scrollCallback(GLFWwindow* win, double xoffset, double yoffset) {
+    OrbitCameras[activeIndex]->addZoom(yoffset);
+}
+
+void MyApp::keyCallback(GLFWwindow* win, int key, int scancode, int action,
+    int mods) {
+    mgl::KeyState::getInstance().updateKeyState(key, action);
+
+    if (mgl::KeyState::getInstance().isKeyPressed(GLFW_KEY_C)) {
+        switchCamera();
+    }
+    else if (mgl::KeyState::getInstance().isKeyPressed(GLFW_KEY_P)) {
+        OrbitCameras[activeIndex]->switchProjection();
+    }
+
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+        glfwSetWindowShouldClose(win, GLFW_TRUE);
+        windowCloseCallback(win);
+    }
+}
+
+void MyApp::switchCamera() {
+    OrbitCameras[activeIndex]->setActive(false);
+    activeIndex = activeIndex == 0 ? 1 : 0;
+    OrbitCameras[activeIndex]->setActive(true);
+}
+
 
 ///////////////////////////////////////////////////////////////////////// SHADER
 
@@ -146,9 +206,11 @@ void MyApp::createBufferObjects() {
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-  glDeleteBuffers(2, boId);
+  //glDeleteBuffers(2, boId);
 
-  Camera = new mgl::Camera(UBO_BP);
+  OrbitCameras[0] = new mgl::OrbitCamera(UBO_BP, true, glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+  OrbitCameras[1] = new mgl::OrbitCamera(UBO_BP, false, glm::vec3(-5.0f, -5.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+  activeIndex = 0;
 }
 
 void MyApp::destroyBufferObjects() {
@@ -161,30 +223,12 @@ void MyApp::destroyBufferObjects() {
 
 ////////////////////////////////////////////////////////////////////////// SCENE
 
-const glm::mat4 ModelMatrix = glm::translate(glm::vec3(-0.5f, -0.5f, -0.5f)) *
-                              glm::scale(glm::vec3(2.0f));
+const glm::mat4 ModelMatrix = glm::scale(glm::vec3(2.0f)) * glm::translate(glm::vec3(-0.5f, -0.5f, -0.5f));
 
-// Eye(5,5,5) Center(0,0,0) Up(0,1,0)
-const glm::mat4 ViewMatrix1 =
-    glm::lookAt(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f),
-                glm::vec3(0.0f, 1.0f, 0.0f));
+void MyApp::drawScene(double elapsed) {
+  OrbitCameras[activeIndex]->updateRotation(elapsed);
 
-// Eye(-5,-5,-5) Center(0,0,0) Up(0,1,0)
-const glm::mat4 ViewMatrix2 =
-    glm::lookAt(glm::vec3(-5.0f, -5.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f),
-                glm::vec3(0.0f, 1.0f, 0.0f));
-
-// Orthographic LeftRight(-2,2) BottomTop(-2,2) NearFar(1,10)
-const glm::mat4 ProjectionMatrix1 =
-    glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, 1.0f, 15.0f);
-
-// Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
-const glm::mat4 ProjectionMatrix2 =
-    glm::perspective(glm::radians(30.0f), 4.0f / 3.0f, 1.0f, 15.0f);
-
-void MyApp::drawScene() {
-  Camera->setViewMatrix(ViewMatrix1);
-  Camera->setProjectionMatrix(ProjectionMatrix2);
+  glm::mat4(glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
 
   glBindVertexArray(VaoId);
   Shaders->bind();
@@ -207,9 +251,11 @@ void MyApp::windowCloseCallback(GLFWwindow *win) { destroyBufferObjects(); }
 
 void MyApp::windowSizeCallback(GLFWwindow *win, int winx, int winy) {
   glViewport(0, 0, winx, winy);
+  OrbitCameras[0]->updatePerspectiveProjectionMatrix(winx, winy);
+  OrbitCameras[1]->updatePerspectiveProjectionMatrix(winx, winy);
 }
 
-void MyApp::displayCallback(GLFWwindow *win, double elapsed) { drawScene(); }
+void MyApp::displayCallback(GLFWwindow *win, double elapsed) { drawScene(elapsed); }
 
 /////////////////////////////////////////////////////////////////////////// MAIN
 
