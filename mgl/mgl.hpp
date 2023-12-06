@@ -18,5 +18,7 @@
 #include "./mglError.hpp"
 #include "./mglScenegraph.hpp"
 #include "./mglShader.hpp"
+#include "./mglOrbitCamera.hpp"
+#include "./mglKeyState.hpp"
 
 #endif /* MGL_HPP */
