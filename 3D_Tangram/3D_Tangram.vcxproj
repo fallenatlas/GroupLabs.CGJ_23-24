@@ -22,8 +22,7 @@
     <ClCompile Include="..\mgl\mglApp.cpp" />
     <ClCompile Include="..\mgl\mglCamera.cpp" />
     <ClCompile Include="..\mgl\mglError.cpp" />
-    <ClCompile Include="..\mgl\mglKeyState.cpp" />
-    <ClCompile Include="..\mgl\mglOrbitCamera.cpp" />
+    <ClCompile Include="..\mgl\mglMesh.cpp" />
     <ClCompile Include="..\mgl\mglShader.cpp" />
     <ClCompile Include="hello-3d-world.cpp" />
   </ItemGroup>
@@ -37,8 +36,7 @@
     <ClInclude Include="..\mgl\mglCamera.hpp" />
     <ClInclude Include="..\mgl\mglConventions.hpp" />
     <ClInclude Include="..\mgl\mglError.hpp" />
-    <ClInclude Include="..\mgl\mglKeyState.hpp" />
-    <ClInclude Include="..\mgl\mglOrbitCamera.hpp" />
+    <ClInclude Include="..\mgl\mglMesh.hpp" />
     <ClInclude Include="..\mgl\mglScenegraph.hpp" />
     <ClInclude Include="..\mgl\mglShader.hpp" />
   </ItemGroup>
@@ -134,13 +132,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\glew\include;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\glm</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\glew\include;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\glm;$(SolutionDir)dependencies\assimp\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)dependencies\glew\lib\Release\x64;$(SolutionDir)dependencies\glfw\lib-vc2022</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);opengl32.lib;glew32.lib;glfw3dll.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)dependencies\glew\lib\Release\x64;$(SolutionDir)dependencies\glfw\lib-vc2022;$(SolutionDir)dependencies\assimp\lib64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);opengl32.lib;glew32.lib;glfw3dll.lib;assimp.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(SolutionDir)dependencies\glew\bin\Release\x64\glew32.dll $(OutDir) /y
