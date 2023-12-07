@@ -27,16 +27,14 @@ void OrbitCamera::updateRotation(double elapsed) {
 	
 	//compute pitch quaternion
 	glm::quat pitchQuat = glm::angleAxis(pitch * (float)elapsed, side);
-	if (pitch != 0) std::cout << "pitch: " << pitch * (float)elapsed << std::endl;
 
 	//compute yaw quaternion
 	glm::quat yawQuat = glm::angleAxis(yaw * (float)elapsed, up);
-	if (yaw != 0) std::cout << "yaw" << yaw * (float)elapsed << std::endl;
 
 	//compute total rotation
 	glm::quat rotQuat = pitchQuat * yawQuat;
 
-	position = glm::scale(glm::vec3(zoom)) * glm::mat4(rotQuat) * glm::vec4(direction, 1.0f);
+	position = glm::translate(focusPoint) * glm::scale(glm::vec3(zoom)) * glm::mat4(rotQuat) * glm::vec4(direction, 1.0f);
 
 	//compute new view matrix
 	glm::mat4 view = glm::lookAt(position, focusPoint, up);
