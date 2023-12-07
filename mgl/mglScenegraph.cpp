@@ -16,7 +16,9 @@ namespace mgl
 	}
 
 	SceneGraph::~SceneGraph() {
-		//delete root;
+		for (auto node : nodes) {
+			delete node;
+		}
 		delete camera;
 	}
 
@@ -36,10 +38,6 @@ namespace mgl
 		return this->nodes;
 	}
 
-	void SceneGraph::updateScene() {
-		//update camera
-		//root->update();
-	}
 
 	void SceneGraph::renderScene(GLint ModelMatrixId, glm::mat4 ModelMatrix) {
 		//Problably needs to be changed
@@ -64,13 +62,14 @@ namespace mgl
 
 	///////////////////////////////////////////////////////////////////////// SceneNode
 	SceneNode::SceneNode() {
+		ModelMatrix = glm::mat4(1.0f);
 		mesh = nullptr;
 		shaderProgram = nullptr;
 	}
 
 	SceneNode::~SceneNode() {
-		//TODO: delete mesh and shaderprogram
-
+		delete mesh;
+		delete shaderProgram;
 	}
 
 	void SceneNode::setModelMatrix(glm::mat4 modelmatrix) {
