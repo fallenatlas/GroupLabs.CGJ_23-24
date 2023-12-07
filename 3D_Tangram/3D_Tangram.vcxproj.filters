@@ -30,6 +30,18 @@
     <ClCompile Include="..\mgl\mglShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\mgl\mglKeyState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\mgl\mglMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\mgl\mglOrbitCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\mgl\mglScenegraph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="color-vs.glsl">
@@ -55,10 +67,22 @@
     <ClInclude Include="..\mgl\mglError.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\mgl\mglScenegraph.hpp">
+    <ClInclude Include="..\mgl\mglShader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\mgl\mglShader.hpp">
+    <ClInclude Include="..\mgl\mglKeyState.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mgl\mglMesh.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mgl\mglOrbitCamera.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mgl\mglIDrawable.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mgl\mglScenegraph.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

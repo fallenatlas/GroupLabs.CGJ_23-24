@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 
-#include "./mglScenegraph.hpp"
+#include "./mglIDrawable.hpp"
 
 namespace mgl {
 
