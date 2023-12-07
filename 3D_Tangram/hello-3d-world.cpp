@@ -26,7 +26,7 @@ class MyApp : public mgl::App {
  public:
   void initCallback(GLFWwindow *win) override;
   void displayCallback(GLFWwindow *win, double elapsed) override;
-  void windowCloseCallback(GLFWwindow *win) override;
+  //void windowCloseCallback(GLFWwindow *win) override;
   void windowSizeCallback(GLFWwindow *win, int width, int height) override;
   void keyCallback(GLFWwindow* win, int key, int scancode, int action, int mods) override;
   void cursorCallback(GLFWwindow* win, double xpos, double ypos) override;
@@ -41,13 +41,14 @@ class MyApp : public mgl::App {
   mgl::OrbitCamera* OrbitCameras[2] = { nullptr };
   int activeIndex = 0;
   GLint ModelMatrixId;
+  mgl::Mesh* Mesh = nullptr;
 
   double previousMousePositionX = 0;
   double previousMousePositionY = 0;
 
-  void createShaderProgram();
-  void createBufferObjects();
-  void destroyBufferObjects();
+  void createMeshes();
+  void createShaderPrograms();
+  void createCameras();
   void drawScene(double elapsed);
   void switchCamera();
 };
@@ -103,151 +104,82 @@ void MyApp::switchCamera() {
 }
 
 
+///////////////////////////////////////////////////////////////////////// MESHES
+
+void MyApp::createMeshes() {
+    std::string mesh_dir = "../04-assets/models/";
+    // std::string mesh_file = "cube-v.obj";
+    // std::string mesh_file = "cube-vn.obj";
+    // std::string mesh_file = "cube-vtn.obj";
+    // std::string mesh_file = "cube-vtn-2.obj";
+    // std::string mesh_file = "torus-vtn-flat.obj";
+    // std::string mesh_file = "torus-vtn-smooth.obj";
+    // std::string mesh_file = "suzanne-vtn-flat.obj";
+    // std::string mesh_file = "suzanne-vtn-smooth.obj";
+    // std::string mesh_file = "teapot-vn-flat.obj";
+    // std::string mesh_file = "teapot-vn-smooth.obj";
+    // std::string mesh_file = "bunny-vn-flat.obj";
+    // std::string mesh_file = "bunny-vn-smooth.obj";
+    std::string mesh_file = "monkey-torus-vtn-flat.obj";
+    std::string mesh_fullname = mesh_dir + mesh_file;
+
+    Mesh = new mgl::Mesh();
+    Mesh->joinIdenticalVertices();
+    Mesh->create(mesh_fullname);
+}
+
 ///////////////////////////////////////////////////////////////////////// SHADER
 
-void MyApp::createShaderProgram() {
-  Shaders = new mgl::ShaderProgram();
-  Shaders->addShader(GL_VERTEX_SHADER, "color-vs.glsl");
-  Shaders->addShader(GL_FRAGMENT_SHADER, "color-fs.glsl");
+void MyApp::createShaderPrograms() {
+    Shaders = new mgl::ShaderProgram();
+    Shaders->addShader(GL_VERTEX_SHADER, "cube-vs.glsl");
+    Shaders->addShader(GL_FRAGMENT_SHADER, "cube-fs.glsl");
 
-  Shaders->addAttribute(mgl::POSITION_ATTRIBUTE, POSITION);
-  Shaders->addAttribute(mgl::COLOR_ATTRIBUTE, COLOR);
-  Shaders->addUniform(mgl::MODEL_MATRIX);
-  Shaders->addUniformBlock(mgl::CAMERA_BLOCK, UBO_BP);
-
-  Shaders->create();
-
-  ModelMatrixId = Shaders->Uniforms[mgl::MODEL_MATRIX].index;
-}
-
-////////////////////////////////////////////////////////////////// VAO, VBO, EBO
-
-typedef struct {
-  GLfloat XYZW[4];
-  GLfloat RGBA[4];
-} Vertex;
-
-const Vertex Vertices[] = {
-    {{0.0f, 0.0f, 1.0f, 1.0f}, {0.9f, 0.1f, 0.1f, 1.0f}},  // 0 - FRONT
-    {{1.0f, 0.0f, 1.0f, 1.0f}, {0.9f, 0.1f, 0.1f, 1.0f}},  // 1
-    {{1.0f, 1.0f, 1.0f, 1.0f}, {0.9f, 0.1f, 0.1f, 1.0f}},  // 2
-                                                           // 2
-    {{0.0f, 1.0f, 1.0f, 1.0f}, {0.9f, 0.1f, 0.1f, 1.0f}},  // 3
-                                                           // 0
-
-    {{1.0f, 0.0f, 1.0f, 1.0f}, {0.1f, 0.9f, 0.1f, 1.0f}},  // 1 - RIGHT
-    {{1.0f, 0.0f, 0.0f, 1.0f}, {0.1f, 0.9f, 0.1f, 1.0f}},  // 5
-    {{1.0f, 1.0f, 0.0f, 1.0f}, {0.1f, 0.9f, 0.1f, 1.0f}},  // 6
-                                                           // 6
-    {{1.0f, 1.0f, 1.0f, 1.0f}, {0.1f, 0.9f, 0.1f, 1.0f}},  // 2
-                                                           // 1
-
-    {{1.0f, 1.0f, 1.0f, 1.0f}, {0.1f, 0.1f, 0.9f, 1.0f}},  // 2 - TOP
-    {{1.0f, 1.0f, 0.0f, 1.0f}, {0.1f, 0.1f, 0.9f, 1.0f}},  // 6
-    {{0.0f, 1.0f, 0.0f, 1.0f}, {0.1f, 0.1f, 0.9f, 1.0f}},  // 7
-                                                           // 7
-    {{0.0f, 1.0f, 1.0f, 1.0f}, {0.1f, 0.1f, 0.9f, 1.0f}},  // 3
-                                                           // 2
-
-    {{1.0f, 0.0f, 0.0f, 1.0f}, {0.1f, 0.9f, 0.9f, 1.0f}},  // 5 - BACK
-    {{0.0f, 0.0f, 0.0f, 1.0f}, {0.1f, 0.9f, 0.9f, 1.0f}},  // 4
-    {{0.0f, 1.0f, 0.0f, 1.0f}, {0.1f, 0.9f, 0.9f, 1.0f}},  // 7
-                                                           // 7
-    {{1.0f, 1.0f, 0.0f, 1.0f}, {0.1f, 0.9f, 0.9f, 1.0f}},  // 6
-                                                           // 5
-
-    {{0.0f, 0.0f, 0.0f, 1.0f}, {0.9f, 0.1f, 0.9f, 1.0f}},  // 4 - LEFT
-    {{0.0f, 0.0f, 1.0f, 1.0f}, {0.9f, 0.1f, 0.9f, 1.0f}},  // 0
-    {{0.0f, 1.0f, 1.0f, 1.0f}, {0.9f, 0.1f, 0.9f, 1.0f}},  // 3
-                                                           // 3
-    {{0.0f, 1.0f, 0.0f, 1.0f}, {0.9f, 0.1f, 0.9f, 1.0f}},  // 7
-                                                           // 4
-
-    {{0.0f, 0.0f, 1.0f, 1.0f}, {0.9f, 0.9f, 0.1f, 1.0f}},  // 0 - BOTTOM
-    {{0.0f, 0.0f, 0.0f, 1.0f}, {0.9f, 0.9f, 0.1f, 1.0f}},  // 4
-    {{1.0f, 0.0f, 0.0f, 1.0f}, {0.9f, 0.9f, 0.1f, 1.0f}},  // 5
-                                                           // 5
-    {{1.0f, 0.0f, 1.0f, 1.0f}, {0.9f, 0.9f, 0.1f, 1.0f}}   // 1
-                                                           // 0
-};
-
-const unsigned int Indices[] = {
-    0,  1,  2,  2,  3,  0,   // FRONT
-    4,  5,  6,  6,  7,  4,   // RIGHT
-    8,  9,  10, 10, 11, 8,   // TOP
-    12, 13, 14, 14, 15, 12,  // BACK
-    16, 17, 18, 18, 19, 16,  // LEFT
-    20, 21, 22, 22, 23, 20   // BOTTOM
-};
-
-void MyApp::createBufferObjects() {
-  GLuint boId[2];
-
-  glGenVertexArrays(1, &VaoId);
-  glBindVertexArray(VaoId);
-  {
-    glGenBuffers(2, boId);
-    glBindBuffer(GL_ARRAY_BUFFER, boId[0]);
-    {
-      glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
-
-      glEnableVertexAttribArray(POSITION);
-      glVertexAttribPointer(POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-
-      glEnableVertexAttribArray(COLOR);
-      glVertexAttribPointer(
-          COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-          reinterpret_cast<GLvoid *>(sizeof(Vertices[0].XYZW)));
+    Shaders->addAttribute(mgl::POSITION_ATTRIBUTE, mgl::Mesh::POSITION);
+    if (Mesh->hasNormals()) {
+        Shaders->addAttribute(mgl::NORMAL_ATTRIBUTE, mgl::Mesh::NORMAL);
     }
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, boId[1]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices,
-                 GL_STATIC_DRAW);
-  }
-  glBindVertexArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-  //glDeleteBuffers(2, boId);
+    if (Mesh->hasTexcoords()) {
+        Shaders->addAttribute(mgl::TEXCOORD_ATTRIBUTE, mgl::Mesh::TEXCOORD);
+    }
+    if (Mesh->hasTangentsAndBitangents()) {
+        Shaders->addAttribute(mgl::TANGENT_ATTRIBUTE, mgl::Mesh::TANGENT);
+    }
 
-  OrbitCameras[0] = new mgl::OrbitCamera(UBO_BP, true, glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-  OrbitCameras[1] = new mgl::OrbitCamera(UBO_BP, false, glm::vec3(-5.0f, -5.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-  activeIndex = 0;
+    Shaders->addUniform(mgl::MODEL_MATRIX);
+    Shaders->addUniformBlock(mgl::CAMERA_BLOCK, UBO_BP);
+    Shaders->create();
+
+    ModelMatrixId = Shaders->Uniforms[mgl::MODEL_MATRIX].index;
 }
 
-void MyApp::destroyBufferObjects() {
-  glBindVertexArray(VaoId);
-  glDisableVertexAttribArray(POSITION);
-  glDisableVertexAttribArray(COLOR);
-  glDeleteVertexArrays(1, &VaoId);
-  glBindVertexArray(0);
+////////////////////////////////////////////////////////////////////////// CAMERA
+
+void MyApp::createCameras() {
+    OrbitCameras[0] = new mgl::OrbitCamera(UBO_BP, true, glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    OrbitCameras[1] = new mgl::OrbitCamera(UBO_BP, false, glm::vec3(-5.0f, -5.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    activeIndex = 0;
 }
 
 ////////////////////////////////////////////////////////////////////////// SCENE
 
-const glm::mat4 ModelMatrix = glm::scale(glm::vec3(2.0f)) * glm::translate(glm::vec3(-0.5f, -0.5f, -0.5f));
+const glm::mat4 ModelMatrix(1.0f);
 
 void MyApp::drawScene(double elapsed) {
-  OrbitCameras[activeIndex]->updateRotation(elapsed);
-
-  glm::mat4(glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
-
-  glBindVertexArray(VaoId);
-  Shaders->bind();
-
-  glUniformMatrix4fv(ModelMatrixId, 1, GL_FALSE, glm::value_ptr(ModelMatrix));
-  glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-
-  Shaders->unbind();
-  glBindVertexArray(0);
+    OrbitCameras[activeIndex]->updateRotation(elapsed);
+    Shaders->bind();
+    glUniformMatrix4fv(ModelMatrixId, 1, GL_FALSE, glm::value_ptr(ModelMatrix));
+    Mesh->draw();
+    Shaders->unbind();
 }
 
 ////////////////////////////////////////////////////////////////////// CALLBACKS
 
-void MyApp::initCallback(GLFWwindow *win) {
-  createBufferObjects();
-  createShaderProgram();
+void MyApp::initCallback(GLFWwindow* win) {
+    createMeshes();
+    createShaderPrograms();  // after mesh;
+    createCameras();
 }
-
-void MyApp::windowCloseCallback(GLFWwindow *win) { destroyBufferObjects(); }
 
 void MyApp::windowSizeCallback(GLFWwindow *win, int winx, int winy) {
   glViewport(0, 0, winx, winy);

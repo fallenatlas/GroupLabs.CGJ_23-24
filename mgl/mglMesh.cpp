@@ -183,7 +183,7 @@ void Mesh::createBufferObjects() {
   }
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glDeleteBuffers(6, boId);
+  //glDeleteBuffers(6, boId);
 }
 
 void Mesh::destroyBufferObjects() {
