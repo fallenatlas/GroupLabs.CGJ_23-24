@@ -12,15 +12,60 @@
 #include <glm/glm.hpp>
 #include <vector>
 
+#include "./mglCamera.hpp"
+#include "./mglShader.hpp"
+#include "./mglMesh.hpp"
+
 namespace mgl {
 
-class IDrawable;
+class SceneGraph;
+class SceneNode;
 
-////////////////////////////////////////////////////////////////////// IDrawable
+////////////////////////////////////////////////////////////////////// SceneGraph
 
-class IDrawable {
- public:
-  virtual void draw(void) = 0;
+class SceneGraph {
+private:
+	Camera* camera;
+	std::vector <SceneNode*> nodes;
+
+public:
+	SceneGraph(Camera* camera);
+	virtual ~SceneGraph();
+
+	void setCamera(Camera* camera);
+	Camera* getCamera();
+
+	void addNode(SceneNode* node);
+	std::vector <SceneNode*> getNodes();
+
+	void updateScene();
+	void renderScene(GLint ModelMatrixId, glm::mat4 ModelMatrix);
+
+	void drawNode(SceneNode* node);
+};
+
+////////////////////////////////////////////////////////////////////// SceneNode
+
+class SceneNode {
+private:
+	glm::mat4 ModelMatrix;
+	Mesh* mesh;
+	ShaderProgram* shaderProgram;
+
+public:
+	SceneNode();
+	virtual ~SceneNode();
+
+	void setModelMatrix(glm::mat4 ModelMatrix);
+	glm::mat4 getModelMatrix();
+
+	void setMesh(Mesh* mesh);
+	Mesh* getMesh();
+
+	void setShaderProgram(ShaderProgram* shaderProgram);
+	ShaderProgram* getShaderProgram();
+
+	void draw();
 };
 
 ////////////////////////////////////////////////////////////////////////////////
