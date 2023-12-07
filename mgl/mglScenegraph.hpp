@@ -38,7 +38,6 @@ public:
 	void addNode(SceneNode* node);
 	std::vector <SceneNode*> getNodes();
 
-	void updateScene();
 	void renderScene(GLint ModelMatrixId, glm::mat4 ModelMatrix);
 
 	void drawNode(SceneNode* node);
