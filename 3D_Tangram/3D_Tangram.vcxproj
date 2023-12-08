@@ -32,6 +32,8 @@
   <ItemGroup>
     <None Include="color-fs.glsl" />
     <None Include="color-vs.glsl" />
+    <None Include="cube-fs.glsl" />
+    <None Include="cube-vs.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\mgl\mgl.hpp" />
