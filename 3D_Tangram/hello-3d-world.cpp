@@ -41,7 +41,12 @@ class MyApp : public mgl::App {
   mgl::OrbitCamera* OrbitCameras[2] = { nullptr };
   int activeIndex = 0;
   GLint ModelMatrixId;
-  mgl::Mesh* Mesh = nullptr;
+  GLint NormalMatrixId;
+  GLint ColorId;
+  mgl::SceneGraph* SceneGraph = nullptr;
+  mgl::Mesh* SquareMesh = nullptr;
+  mgl::Mesh* ParalelogramMesh = nullptr;
+  mgl::Mesh* TriangleMesh = nullptr;
 
   double previousMousePositionX = 0;
   double previousMousePositionY = 0;
@@ -49,6 +54,7 @@ class MyApp : public mgl::App {
   void createMeshes();
   void createShaderPrograms();
   void createCameras();
+  void createScene();
   void drawScene(double elapsed);
   void switchCamera();
 };
@@ -107,7 +113,8 @@ void MyApp::switchCamera() {
 ///////////////////////////////////////////////////////////////////////// MESHES
 
 void MyApp::createMeshes() {
-    std::string mesh_dir = "../04-assets/models/";
+    std::string mesh_dir = "../assets/";
+    //std::string mesh_dir = "../04-assets/models/";
     // std::string mesh_file = "cube-v.obj";
     // std::string mesh_file = "cube-vn.obj";
     // std::string mesh_file = "cube-vtn.obj";
@@ -120,12 +127,25 @@ void MyApp::createMeshes() {
     // std::string mesh_file = "teapot-vn-smooth.obj";
     // std::string mesh_file = "bunny-vn-flat.obj";
     // std::string mesh_file = "bunny-vn-smooth.obj";
-    std::string mesh_file = "monkey-torus-vtn-flat.obj";
-    std::string mesh_fullname = mesh_dir + mesh_file;
+    //std::string mesh_file = "monkey-torus-vtn-flat.obj";
+    std::string square_mesh_file = "square_fixed.obj";
+    std::string paralelogram_mesh_file = "paralelogram_fixed.obj";
+    std::string triangle_mesh_file = "triangle_fixed.obj";
+    std::string square_mesh_fullname = mesh_dir + square_mesh_file;
+    std::string paralelogram_mesh_fullname = mesh_dir + paralelogram_mesh_file;
+    std::string triangle_mesh_fullname = mesh_dir + triangle_mesh_file;
 
-    Mesh = new mgl::Mesh();
-    Mesh->joinIdenticalVertices();
-    Mesh->create(mesh_fullname);
+    SquareMesh = new mgl::Mesh();
+    SquareMesh->joinIdenticalVertices();
+    SquareMesh->create(square_mesh_fullname);
+
+    ParalelogramMesh = new mgl::Mesh();
+    ParalelogramMesh->joinIdenticalVertices();
+    ParalelogramMesh->create(paralelogram_mesh_fullname);
+
+    TriangleMesh = new mgl::Mesh();
+    TriangleMesh->joinIdenticalVertices();
+    TriangleMesh->create(triangle_mesh_fullname);
 }
 
 ///////////////////////////////////////////////////////////////////////// SHADER
@@ -136,21 +156,113 @@ void MyApp::createShaderPrograms() {
     Shaders->addShader(GL_FRAGMENT_SHADER, "cube-fs.glsl");
 
     Shaders->addAttribute(mgl::POSITION_ATTRIBUTE, mgl::Mesh::POSITION);
-    if (Mesh->hasNormals()) {
+    if (SquareMesh->hasNormals() && TriangleMesh->hasNormals() && ParalelogramMesh->hasNormals()) {
         Shaders->addAttribute(mgl::NORMAL_ATTRIBUTE, mgl::Mesh::NORMAL);
     }
-    if (Mesh->hasTexcoords()) {
+    if (SquareMesh->hasTexcoords() && TriangleMesh->hasTexcoords() && ParalelogramMesh->hasTexcoords()) {
         Shaders->addAttribute(mgl::TEXCOORD_ATTRIBUTE, mgl::Mesh::TEXCOORD);
     }
-    if (Mesh->hasTangentsAndBitangents()) {
+    if (SquareMesh->hasTangentsAndBitangents() && TriangleMesh->hasTangentsAndBitangents() && ParalelogramMesh->hasTangentsAndBitangents()) {
         Shaders->addAttribute(mgl::TANGENT_ATTRIBUTE, mgl::Mesh::TANGENT);
     }
 
     Shaders->addUniform(mgl::MODEL_MATRIX);
+    Shaders->addUniform(mgl::COLOR_UNIFORM);
+    Shaders->addUniform(mgl::NORMAL_MATRIX);
     Shaders->addUniformBlock(mgl::CAMERA_BLOCK, UBO_BP);
     Shaders->create();
 
     ModelMatrixId = Shaders->Uniforms[mgl::MODEL_MATRIX].index;
+    NormalMatrixId = Shaders->Uniforms[mgl::NORMAL_MATRIX].index;
+    ColorId = Shaders->Uniforms[mgl::COLOR_UNIFORM].index;
+}
+
+// model matrixes
+
+// colors
+const glm::vec4 purpleColor = { 0.451f, 0.247f, 0.800f, 1.0f };
+const glm::vec4 blueColor = { 0.0f, 0.0f, 1.0f, 1.0f };
+const glm::vec4 magentaColor = { 0.808f, 0.172f, 0.416f, 1.0f };
+const glm::vec4 aquaColor = { 0.0f, 0.6f, 0.6f, 1.0f };
+const glm::vec4 orangeColor = { 1.0f, 0.25f, 0.25f, 1.0f };
+const glm::vec4 paralelogramColor = { 1.0f, 0.608f, 0.153f, 1.0f };
+const glm::vec4 squareColor = { 0.0f, 0.6f, 0.0f, 1.0f };
+
+void MyApp::createScene() {
+    SceneGraph = new mgl::SceneGraph();
+
+    // square
+    mgl::SceneNode* squareNode = new mgl::SceneNode(ModelMatrixId, NormalMatrixId, ColorId);
+    squareNode->setMesh(SquareMesh);
+    glm::mat4 squareMM = glm::translate(glm::vec3(-2.0f * 1.416f * 1.416f, 0.0f, 0.0f)) * glm::rotate(glm::radians(135.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    squareNode->setModelMatrix(squareMM);
+    squareNode->setNormalMatrix(glm::transpose(glm::inverse(squareMM)));
+    squareNode->setColor(squareColor);
+    squareNode->setShaderProgram(Shaders);
+    SceneGraph->addNode(squareNode);
+
+    // paralelogram
+    mgl::SceneNode* paralelogramNode = new mgl::SceneNode(ModelMatrixId, NormalMatrixId, ColorId);
+    paralelogramNode->setMesh(ParalelogramMesh);
+    glm::mat4 paralelogramMM = glm::rotate(glm::radians(180.f), glm::vec3(0.0f, 1.0f, 0.0f));
+    paralelogramNode->setModelMatrix(paralelogramMM);
+    paralelogramNode->setNormalMatrix(glm::transpose(glm::inverse(paralelogramMM)));
+    paralelogramNode->setColor(paralelogramColor);
+    paralelogramNode->setShaderProgram(Shaders);
+    SceneGraph->addNode(paralelogramNode);
+
+    // small triangles
+    // cyan
+    mgl::SceneNode* cyanTriangleNode = new mgl::SceneNode(ModelMatrixId, NormalMatrixId, ColorId);
+    cyanTriangleNode->setMesh(TriangleMesh);
+    glm::mat4 cyanMM = glm::translate(glm::vec3(-2.0f, 0.0f, 0.0f)) * glm::translate(glm::vec3(-2.0f * 1.416f * 1.416f, 0.0f, 2.0f * 1.416f * 1.416f));
+    cyanTriangleNode->setModelMatrix(cyanMM);
+    cyanTriangleNode->setNormalMatrix(glm::transpose(glm::inverse(cyanMM)));
+    cyanTriangleNode->setColor(aquaColor);
+    cyanTriangleNode->setShaderProgram(Shaders);
+    SceneGraph->addNode(cyanTriangleNode);
+
+    // orange
+    mgl::SceneNode* orangeTriangleNode = new mgl::SceneNode(ModelMatrixId, NormalMatrixId, ColorId);
+    orangeTriangleNode->setMesh(TriangleMesh);
+    glm::mat4 orangeMM = glm::translate(glm::vec3(-2.0f * 1.416f * 1.416f, 0.0f, -1.0f * 1.416f * 1.416f)) * glm::rotate(glm::radians(90.f), glm::vec3(0.0f, 1.0f, 0.0f));
+    orangeTriangleNode->setModelMatrix(orangeMM);
+    orangeTriangleNode->setNormalMatrix(glm::transpose(glm::inverse(orangeMM)));
+    orangeTriangleNode->setColor(orangeColor);
+    orangeTriangleNode->setShaderProgram(Shaders);
+    SceneGraph->addNode(orangeTriangleNode);
+    
+    // medium triangles
+    // purple
+    mgl::SceneNode* purpleTriangleNode = new mgl::SceneNode(ModelMatrixId, NormalMatrixId, ColorId);
+    purpleTriangleNode->setMesh(TriangleMesh);
+    glm::mat4 purpleMM = glm::scale(glm::vec3(1.416f, 1.0f, 1.416f));
+    purpleTriangleNode->setModelMatrix(purpleMM);
+    purpleTriangleNode->setNormalMatrix(glm::transpose(glm::inverse(purpleMM)));
+    purpleTriangleNode->setColor(purpleColor);
+    purpleTriangleNode->setShaderProgram(Shaders);
+    SceneGraph->addNode(purpleTriangleNode);
+
+    // big triangles
+    // blue
+    mgl::SceneNode* blueTriangleNode = new mgl::SceneNode(ModelMatrixId, NormalMatrixId, ColorId);
+    blueTriangleNode->setMesh(TriangleMesh);
+    glm::mat4 blueMM = glm::scale(glm::vec3(1.416f, 1.0f, 1.416f)) * glm::scale(glm::vec3(1.416f, 1.0f, 1.416f)) * glm::translate(glm::vec3(-2.0f, 0.0f, -2.0f)) * glm::rotate(glm::radians(-90.f), glm::vec3(0.0f, 1.0f, 0.0f));
+    blueTriangleNode->setModelMatrix(blueMM);
+    blueTriangleNode->setNormalMatrix(glm::transpose(glm::inverse(blueMM)));
+    blueTriangleNode->setColor(blueColor);
+    blueTriangleNode->setShaderProgram(Shaders);
+    SceneGraph->addNode(blueTriangleNode);
+
+    // magenta
+    mgl::SceneNode* magentaTriangleNode = new mgl::SceneNode(ModelMatrixId, NormalMatrixId, ColorId);
+    magentaTriangleNode->setMesh(TriangleMesh);
+    glm::mat4 magentaMM = glm::scale(glm::vec3(1.416f, 1.0f, 1.416f)) * glm::scale(glm::vec3(1.416f, 1.0f, 1.416f)) * glm::rotate(glm::radians(180.f), glm::vec3(0.0f, 1.0f, 0.0f));
+    magentaTriangleNode->setModelMatrix(magentaMM);
+    magentaTriangleNode->setNormalMatrix(glm::transpose(glm::inverse(magentaMM)));
+    magentaTriangleNode->setColor(magentaColor);
+    magentaTriangleNode->setShaderProgram(Shaders);
+    SceneGraph->addNode(magentaTriangleNode);
 }
 
 ////////////////////////////////////////////////////////////////////////// CAMERA
@@ -167,10 +279,13 @@ const glm::mat4 ModelMatrix(1.0f);
 
 void MyApp::drawScene(double elapsed) {
     OrbitCameras[activeIndex]->updateRotation(elapsed);
+    SceneGraph->renderScene();
+    /*
     Shaders->bind();
     glUniformMatrix4fv(ModelMatrixId, 1, GL_FALSE, glm::value_ptr(ModelMatrix));
     Mesh->draw();
     Shaders->unbind();
+    */
 }
 
 ////////////////////////////////////////////////////////////////////// CALLBACKS
@@ -179,6 +294,7 @@ void MyApp::initCallback(GLFWwindow* win) {
     createMeshes();
     createShaderPrograms();  // after mesh;
     createCameras();
+    createScene();
 }
 
 void MyApp::windowSizeCallback(GLFWwindow *win, int winx, int winy) {
