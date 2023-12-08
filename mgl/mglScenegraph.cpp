@@ -4,29 +4,29 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-#include "./mglCamera.hpp"
 #include "./mglShader.hpp"
 #include "./mglMesh.hpp"
 
 namespace mgl
 {
-	SceneGraph::SceneGraph(Camera* camera) {
+	SceneGraph::SceneGraph() {
 		this->nodes = std::vector<SceneNode*>();
-		this->camera = camera;
 	}
 
 	SceneGraph::~SceneGraph() {
+		/*
 		for (auto node : nodes) {
 			delete node;
 		}
 		delete camera;
+		*/
 	}
 
-	void SceneGraph::setCamera(Camera* camera) {
+	void SceneGraph::setCamera(OrbitCamera* camera) {
 		this->camera = camera;
 	}
 
-	Camera* SceneGraph::getCamera() {
+	OrbitCamera* SceneGraph::getCamera() {
 		return camera;
 	}
 
@@ -39,17 +39,16 @@ namespace mgl
 	}
 
 
-	void SceneGraph::renderScene(GLint ModelMatrixId, glm::mat4 ModelMatrix) {
+	void SceneGraph::renderScene() {
 		//Problably needs to be changed
 		for (auto node : nodes) {
-			node->getShaderProgram()->bind();
+			//node->getShaderProgram()->bind();
 
-			glUniformMatrix4fv(ModelMatrixId, 1, GL_FALSE, glm::value_ptr(ModelMatrix));
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+			//glUniformMatrix4fv(ModelMatrixId, 1, GL_FALSE, glm::value_ptr(node->getModelMatrix()));
 
-			drawNode(node);
+			node->draw();
 
-			node->getShaderProgram()->unbind();
+			//node->getShaderProgram()->unbind();
 		}
 		
 	}
@@ -61,15 +60,20 @@ namespace mgl
 	}
 
 	///////////////////////////////////////////////////////////////////////// SceneNode
-	SceneNode::SceneNode() {
+	SceneNode::SceneNode(GLint modelMatrixId, GLint normalMatrixId, GLint colorId) {
 		ModelMatrix = glm::mat4(1.0f);
+		ModelMatrixId = modelMatrixId;
+		NormalMatrixId = normalMatrixId;
+		ColorId = colorId;
 		mesh = nullptr;
 		shaderProgram = nullptr;
 	}
 
 	SceneNode::~SceneNode() {
+		/*
 		delete mesh;
 		delete shaderProgram;
+		*/
 	}
 
 	void SceneNode::setModelMatrix(glm::mat4 modelmatrix) {
@@ -80,12 +84,28 @@ namespace mgl
 		return ModelMatrix;
 	}
 
+	void SceneNode::setNormalMatrix(glm::mat4 normalMatrix) {
+		NormalMatrix = normalMatrix;
+	}
+
+	glm::mat4 SceneNode::getNormalMatrix() {
+		return NormalMatrix;
+	}
+
 	void SceneNode::setMesh(Mesh* mesh) {
 		this->mesh = mesh;
 	}
 
 	Mesh* SceneNode::getMesh() {
 		return mesh;
+	}
+
+	void SceneNode::setColor(glm::vec4 color) {
+		Color = color;
+	}
+
+	glm::vec4 SceneNode::getColor() {
+		return Color;
 	}
 
 	void SceneNode::setShaderProgram(ShaderProgram* shaderProgram) {
@@ -98,8 +118,15 @@ namespace mgl
 
 	void SceneNode::draw() {
 		if (mesh) {
+			shaderProgram->bind();
+			glUniformMatrix4fv(ModelMatrixId, 1, GL_FALSE, glm::value_ptr(ModelMatrix));
+			glUniformMatrix4fv(NormalMatrixId, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
+			glUniform4fv(ColorId, 1, glm::value_ptr(Color));
 			mesh->draw();
+			shaderProgram->unbind();
 		}
+
+		// draw children
 	}
 	
 }
