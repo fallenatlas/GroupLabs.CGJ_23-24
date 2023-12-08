@@ -12,7 +12,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 
-#include "./mglCamera.hpp"
+#include "./mglOrbitCamera.hpp"
 #include "./mglShader.hpp"
 #include "./mglMesh.hpp"
 
@@ -25,20 +25,20 @@ class SceneNode;
 
 class SceneGraph {
 private:
-	Camera* camera;
+	OrbitCamera* camera;
 	std::vector <SceneNode*> nodes;
 
 public:
-	SceneGraph(Camera* camera);
+	SceneGraph();
 	virtual ~SceneGraph();
 
-	void setCamera(Camera* camera);
-	Camera* getCamera();
+	void setCamera(OrbitCamera* camera);
+	OrbitCamera* getCamera();
 
 	void addNode(SceneNode* node);
 	std::vector <SceneNode*> getNodes();
 
-	void renderScene(GLint ModelMatrixId, glm::mat4 ModelMatrix);
+	void renderScene();
 
 	void drawNode(SceneNode* node);
 };
@@ -50,16 +50,29 @@ private:
 	glm::mat4 ModelMatrix;
 	Mesh* mesh;
 	ShaderProgram* shaderProgram;
+	GLint ModelMatrixId;
+	GLint ColorId;
+	GLint NormalMatrixId;
+	glm::mat4 NormalMatrix;
+	glm::vec4 Color;
+	// parent
+	// vector childs
 
 public:
-	SceneNode();
+	SceneNode(GLint ModelMatrixId, GLint normalMatrixId, GLint colorId);
 	virtual ~SceneNode();
 
 	void setModelMatrix(glm::mat4 ModelMatrix);
 	glm::mat4 getModelMatrix();
 
+	void setNormalMatrix(glm::mat4 NormalMatrix);
+	glm::mat4 getNormalMatrix();
+
 	void setMesh(Mesh* mesh);
 	Mesh* getMesh();
+
+	void setColor(glm::vec4 color);
+	glm::vec4 getColor();
 
 	void setShaderProgram(ShaderProgram* shaderProgram);
 	ShaderProgram* getShaderProgram();
