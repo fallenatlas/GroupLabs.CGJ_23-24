@@ -194,7 +194,7 @@ void MyApp::createScene() {
     // square
     mgl::SceneNode* squareNode = new mgl::SceneNode(ModelMatrixId, NormalMatrixId, ColorId);
     squareNode->setMesh(SquareMesh);
-    glm::mat4 squareMM = glm::translate(glm::vec3(-2.0f * 1.416f * 1.416f, 0.0f, 0.0f)) * glm::rotate(glm::radians(135.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 squareMM = glm::translate(glm::vec3(-7.0f, 2.0f, 0.004f + 1.416f * 1.416f)) * glm::rotate(glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     squareNode->setModelMatrix(squareMM);
     squareNode->setNormalMatrix(glm::transpose(glm::inverse(squareMM)));
     squareNode->setColor(squareColor);
@@ -204,7 +204,7 @@ void MyApp::createScene() {
     // paralelogram
     mgl::SceneNode* paralelogramNode = new mgl::SceneNode(ModelMatrixId, NormalMatrixId, ColorId);
     paralelogramNode->setMesh(ParalelogramMesh);
-    glm::mat4 paralelogramMM = glm::rotate(glm::radians(180.f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 paralelogramMM = glm::translate(glm::vec3(-7.23f, -0.005f + 2.0f * 1.416f * 1.416f, - 1.416f * 1.416f)) * glm::rotate(glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f)) * glm::rotate(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     paralelogramNode->setModelMatrix(paralelogramMM);
     paralelogramNode->setNormalMatrix(glm::transpose(glm::inverse(paralelogramMM)));
     paralelogramNode->setColor(paralelogramColor);
@@ -215,7 +215,7 @@ void MyApp::createScene() {
     // cyan
     mgl::SceneNode* cyanTriangleNode = new mgl::SceneNode(ModelMatrixId, NormalMatrixId, ColorId);
     cyanTriangleNode->setMesh(TriangleMesh);
-    glm::mat4 cyanMM = glm::translate(glm::vec3(-2.0f, 0.0f, 0.0f)) * glm::translate(glm::vec3(-2.0f * 1.416f * 1.416f, 0.0f, 2.0f * 1.416f * 1.416f));
+    glm::mat4 cyanMM = glm::translate(glm::vec3(-7.01f, - 0.005f + 2.0f * 1.416f * 1.416f, 1.416f * 1.416f)) * glm::rotate(glm::radians(90.f), glm::vec3(0.0f, 0.0f, 1.0f)) * glm::rotate(glm::radians(180.f), glm::vec3(0.0f, 1.0f, 0.0f));
     cyanTriangleNode->setModelMatrix(cyanMM);
     cyanTriangleNode->setNormalMatrix(glm::transpose(glm::inverse(cyanMM)));
     cyanTriangleNode->setColor(aquaColor);
@@ -225,7 +225,8 @@ void MyApp::createScene() {
     // orange
     mgl::SceneNode* orangeTriangleNode = new mgl::SceneNode(ModelMatrixId, NormalMatrixId, ColorId);
     orangeTriangleNode->setMesh(TriangleMesh);
-    glm::mat4 orangeMM = glm::translate(glm::vec3(-2.0f * 1.416f * 1.416f, 0.0f, -1.0f * 1.416f * 1.416f)) * glm::rotate(glm::radians(90.f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 orangeMM = glm::translate(glm::vec3(-6.998f, 1.416f * 1.416f, 0.015f -1.416f * 1.416f)) * glm::rotate(glm::radians(90.f), glm::vec3(0.0f, 0.0f, 1.0f)) * glm::rotate(glm::radians(-90.f), glm::vec3(0.0f, 1.0f, 0.0f));
+    cyanTriangleNode->setModelMatrix(cyanMM);
     orangeTriangleNode->setModelMatrix(orangeMM);
     orangeTriangleNode->setNormalMatrix(glm::transpose(glm::inverse(orangeMM)));
     orangeTriangleNode->setColor(orangeColor);
@@ -236,7 +237,7 @@ void MyApp::createScene() {
     // purple
     mgl::SceneNode* purpleTriangleNode = new mgl::SceneNode(ModelMatrixId, NormalMatrixId, ColorId);
     purpleTriangleNode->setMesh(TriangleMesh);
-    glm::mat4 purpleMM = glm::scale(glm::vec3(1.416f, 1.0f, 1.416f));
+    glm::mat4 purpleMM = glm::scale(glm::vec3(1.0f, 1.416f, 1.416f)) * glm::translate(glm::vec3(-7.01f, -0.005f + 2.0f * 1.416f, 1.416f)) * glm::rotate(glm::radians(90.f), glm::vec3(0.0f, 0.0f, 1.0f)) * glm::rotate(glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     purpleTriangleNode->setModelMatrix(purpleMM);
     purpleTriangleNode->setNormalMatrix(glm::transpose(glm::inverse(purpleMM)));
     purpleTriangleNode->setColor(purpleColor);
@@ -247,7 +248,8 @@ void MyApp::createScene() {
     // blue
     mgl::SceneNode* blueTriangleNode = new mgl::SceneNode(ModelMatrixId, NormalMatrixId, ColorId);
     blueTriangleNode->setMesh(TriangleMesh);
-    glm::mat4 blueMM = glm::scale(glm::vec3(1.416f, 1.0f, 1.416f)) * glm::scale(glm::vec3(1.416f, 1.0f, 1.416f)) * glm::translate(glm::vec3(-2.0f, 0.0f, -2.0f)) * glm::rotate(glm::radians(-90.f), glm::vec3(0.0f, 1.0f, 0.0f));
+    //The numbers may be slighty off (like -7.23f in translate)
+    glm::mat4 blueMM = glm::scale(glm::vec3(1.0f, 1.416f, 1.416f)) * glm::scale(glm::vec3(1.0f, 1.416f, 1.416f)) * glm::translate(glm::vec3(-7.23f, 1.0f, -1.0f * 1.416f * 1.416f + 0.01f)) * glm::rotate(glm::radians(-90.f), glm::vec3(0.0f, 0.0f, 1.0f)) * glm::rotate(glm::radians(-90.f), glm::vec3(0.0f, 1.0f, 0.0f));
     blueTriangleNode->setModelMatrix(blueMM);
     blueTriangleNode->setNormalMatrix(glm::transpose(glm::inverse(blueMM)));
     blueTriangleNode->setColor(blueColor);
@@ -257,7 +259,7 @@ void MyApp::createScene() {
     // magenta
     mgl::SceneNode* magentaTriangleNode = new mgl::SceneNode(ModelMatrixId, NormalMatrixId, ColorId);
     magentaTriangleNode->setMesh(TriangleMesh);
-    glm::mat4 magentaMM = glm::scale(glm::vec3(1.416f, 1.0f, 1.416f)) * glm::scale(glm::vec3(1.416f, 1.0f, 1.416f)) * glm::rotate(glm::radians(180.f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 magentaMM = glm::scale(glm::vec3(1.0f, 1.416f, 1.416f)) * glm::scale(glm::vec3(1.0f, 1.416f, 1.416f)) * glm::translate(glm::vec3(-7.0f, 1.0f, 1.0f * 1.416f * 1.416f)) * glm::rotate(glm::radians(90.f), glm::vec3(0.0f, 0.0f, 1.0f)) * glm::rotate(glm::radians(90.f), glm::vec3(0.0f, 1.0f, 0.0f));
     magentaTriangleNode->setModelMatrix(magentaMM);
     magentaTriangleNode->setNormalMatrix(glm::transpose(glm::inverse(magentaMM)));
     magentaTriangleNode->setColor(magentaColor);
