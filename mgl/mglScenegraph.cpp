@@ -50,8 +50,8 @@ namespace mgl
 		}
 	}
 
-
-	void SceneGraph::renderScene() {
+	void SceneGraph::renderScene(double elapsed) {
+		camera->updateRotation(elapsed);
 		for (auto node : nodes) {
 			node->draw();
 		}

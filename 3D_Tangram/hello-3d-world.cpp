@@ -109,6 +109,7 @@ void MyApp::switchCamera() {
     OrbitCameras[activeIndex]->setActive(false);
     activeIndex = activeIndex == 0 ? 1 : 0;
     OrbitCameras[activeIndex]->setActive(true);
+    SceneGraph->setCamera(OrbitCameras[activeIndex]);
 }
 
 
@@ -268,6 +269,7 @@ void MyApp::createCameras() {
     OrbitCameras[0] = new mgl::OrbitCamera(UBO_BP, true, glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     OrbitCameras[1] = new mgl::OrbitCamera(UBO_BP, false, glm::vec3(5.0f, 13.0f, 5.0f), glm::vec3(0.0f, 8.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     activeIndex = 0;
+    SceneGraph->setCamera(OrbitCameras[activeIndex]);
 }
 
 ////////////////////////////////////////////////////////////////////////// SCENE
@@ -275,14 +277,7 @@ void MyApp::createCameras() {
 const glm::mat4 ModelMatrix(1.0f);
 
 void MyApp::drawScene(double elapsed) {
-    OrbitCameras[activeIndex]->updateRotation(elapsed);
-    SceneGraph->renderScene();
-    /*
-    Shaders->bind();
-    glUniformMatrix4fv(ModelMatrixId, 1, GL_FALSE, glm::value_ptr(ModelMatrix));
-    Mesh->draw();
-    Shaders->unbind();
-    */
+    SceneGraph->renderScene(elapsed);
 }
 
 ////////////////////////////////////////////////////////////////////// CALLBACKS
@@ -290,8 +285,8 @@ void MyApp::drawScene(double elapsed) {
 void MyApp::initCallback(GLFWwindow* win) {
     createMeshes();
     createShaderPrograms();  // after mesh;
-    createCameras();
     createScene();
+    createCameras();
 }
 
 void MyApp::windowSizeCallback(GLFWwindow *win, int winx, int winy) {
