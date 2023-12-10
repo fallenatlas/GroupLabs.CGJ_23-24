@@ -26,7 +26,7 @@ class MyApp : public mgl::App {
  public:
   void initCallback(GLFWwindow *win) override;
   void displayCallback(GLFWwindow *win, double elapsed) override;
-  //void windowCloseCallback(GLFWwindow *win) override;
+  void windowCloseCallback(GLFWwindow *win) override;
   void windowSizeCallback(GLFWwindow *win, int width, int height) override;
   void keyCallback(GLFWwindow* win, int key, int scancode, int action, int mods) override;
   void cursorCallback(GLFWwindow* win, double xpos, double ypos) override;
@@ -117,20 +117,6 @@ void MyApp::switchCamera() {
 
 void MyApp::createMeshes() {
     std::string mesh_dir = "../assets/";
-    //std::string mesh_dir = "../04-assets/models/";
-    // std::string mesh_file = "cube-v.obj";
-    // std::string mesh_file = "cube-vn.obj";
-    // std::string mesh_file = "cube-vtn.obj";
-    // std::string mesh_file = "cube-vtn-2.obj";
-    // std::string mesh_file = "torus-vtn-flat.obj";
-    // std::string mesh_file = "torus-vtn-smooth.obj";
-    // std::string mesh_file = "suzanne-vtn-flat.obj";
-    // std::string mesh_file = "suzanne-vtn-smooth.obj";
-    // std::string mesh_file = "teapot-vn-flat.obj";
-    // std::string mesh_file = "teapot-vn-smooth.obj";
-    // std::string mesh_file = "bunny-vn-flat.obj";
-    // std::string mesh_file = "bunny-vn-smooth.obj";
-    //std::string mesh_file = "monkey-torus-vtn-flat.obj";
     std::string square_mesh_file = "square_fixed.obj";
     std::string paralelogram_mesh_file = "paralelogram_fixed.obj";
     std::string triangle_mesh_file = "triangle_fixed.obj";
@@ -298,6 +284,15 @@ void MyApp::windowSizeCallback(GLFWwindow *win, int winx, int winy) {
 void MyApp::displayCallback(GLFWwindow *win, double elapsed) { 
     processAnimation(elapsed);
     drawScene(elapsed); 
+}
+void MyApp::windowCloseCallback(GLFWwindow* win) {
+    delete SquareMesh;
+    delete ParalelogramMesh;
+    delete TriangleMesh;
+    delete OrbitCameras[0];
+    delete OrbitCameras[1];
+    delete Shaders;
+    delete SceneGraph;
 }
 
 void MyApp::processAnimation(double elapsed) {
