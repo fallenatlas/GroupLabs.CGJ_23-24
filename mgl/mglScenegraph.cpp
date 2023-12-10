@@ -14,12 +14,9 @@ namespace mgl
 	}
 
 	SceneGraph::~SceneGraph() {
-		/*
 		for (auto node : nodes) {
 			delete node;
 		}
-		delete camera;
-		*/
 	}
 
 	void SceneGraph::setCamera(OrbitCamera* camera) {
@@ -75,12 +72,7 @@ namespace mgl
 		shaderProgram = nullptr;
 	}
 
-	SceneNode::~SceneNode() {
-		/*
-		delete mesh;
-		delete shaderProgram;
-		*/
-	}
+	SceneNode::~SceneNode() {}
 
 	void SceneNode::setModelMatrix(glm::mat4 modelmatrix) {
 		ModelMatrix = modelmatrix;
