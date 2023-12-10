@@ -45,7 +45,7 @@ public:
 	void moveToBox(double elapsed);
 	void moveToShape(double elapsed);
 
-	void renderScene();
+	void renderScene(double elapsed);
 
 	void drawNode(SceneNode* node);
 };
