@@ -10,11 +10,15 @@
 #define MGL_SCENEGRAPH_HPP
 
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include <vector>
 
 #include "./mglOrbitCamera.hpp"
 #include "./mglShader.hpp"
 #include "./mglMesh.hpp"
+
+const double THRESHOLD = static_cast<float>(1.0e-5);
 
 namespace mgl {
 
@@ -38,6 +42,9 @@ public:
 	void addNode(SceneNode* node);
 	std::vector <SceneNode*> getNodes();
 
+	void moveToBox(double elapsed);
+	void moveToShape(double elapsed);
+
 	void renderScene();
 
 	void drawNode(SceneNode* node);
@@ -55,6 +62,22 @@ private:
 	GLint NormalMatrixId;
 	glm::mat4 NormalMatrix;
 	glm::vec4 Color;
+	
+	// animation destination
+	glm::quat AxisRotationDest;
+	glm::quat BoxRotationDest;
+	glm::vec3 BoxTranslationDest;
+
+	// animation origin
+	const glm::quat AxisRotationOrig = glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	const glm::quat BoxRotationOrig = glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	const glm::vec3 BoxTranslationOrig = glm::vec3(0.0f, 0.0f, 0.0f);
+
+	glm::mat4 AnimatedModelMatrix;
+
+	double Accum = 0;
+	double AnimationTime = 6;
+
 	// parent
 	// vector childs
 
@@ -64,6 +87,8 @@ public:
 
 	void setModelMatrix(glm::mat4 ModelMatrix);
 	glm::mat4 getModelMatrix();
+
+	void setAnimationMovement(glm::quat axisRotationDest, glm::quat boxRotationDest, glm::vec3 boxTranslationDest);
 
 	void setNormalMatrix(glm::mat4 NormalMatrix);
 	glm::mat4 getNormalMatrix();
@@ -76,6 +101,11 @@ public:
 
 	void setShaderProgram(ShaderProgram* shaderProgram);
 	ShaderProgram* getShaderProgram();
+
+	void setAnimationTime(double time);
+	void animate();
+	void moveToBox(double elapsed);
+	void moveToShape(double elapsed);
 
 	void draw();
 };

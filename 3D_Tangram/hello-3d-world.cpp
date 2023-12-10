@@ -56,6 +56,7 @@ class MyApp : public mgl::App {
   void createCameras();
   void createScene();
   void drawScene(double elapsed);
+  void processAnimation(double elapsed);
   void switchCamera();
 };
 
@@ -196,6 +197,7 @@ void MyApp::createScene() {
     squareNode->setMesh(SquareMesh);
     glm::mat4 squareMM = glm::translate(glm::vec3(-2.0f * 1.416f * 1.416f, 0.0f, 0.0f)) * glm::rotate(glm::radians(135.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     squareNode->setModelMatrix(squareMM);
+    squareNode->setAnimationMovement(glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f)), glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::vec3(0.0f, 0.0f, 0.0f));
     squareNode->setNormalMatrix(glm::transpose(glm::inverse(squareMM)));
     squareNode->setColor(squareColor);
     squareNode->setShaderProgram(Shaders);
@@ -206,6 +208,8 @@ void MyApp::createScene() {
     paralelogramNode->setMesh(ParalelogramMesh);
     glm::mat4 paralelogramMM = glm::rotate(glm::radians(180.f), glm::vec3(0.0f, 1.0f, 0.0f));
     paralelogramNode->setModelMatrix(paralelogramMM);
+    paralelogramNode->setAnimationMovement(glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f)), glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::vec3(0.0f, 0.0f, 0.0f));
+    paralelogramNode->setAnimationTime(3.0f);
     paralelogramNode->setNormalMatrix(glm::transpose(glm::inverse(paralelogramMM)));
     paralelogramNode->setColor(paralelogramColor);
     paralelogramNode->setShaderProgram(Shaders);
@@ -217,6 +221,8 @@ void MyApp::createScene() {
     cyanTriangleNode->setMesh(TriangleMesh);
     glm::mat4 cyanMM = glm::translate(glm::vec3(-2.0f, 0.0f, 0.0f)) * glm::translate(glm::vec3(-2.0f * 1.416f * 1.416f, 0.0f, 2.0f * 1.416f * 1.416f));
     cyanTriangleNode->setModelMatrix(cyanMM);
+    cyanTriangleNode->setAnimationMovement(glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f)), glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::vec3(0.0f, 0.0f, 0.0f));
+    cyanTriangleNode->setAnimationTime(8.0);
     cyanTriangleNode->setNormalMatrix(glm::transpose(glm::inverse(cyanMM)));
     cyanTriangleNode->setColor(aquaColor);
     cyanTriangleNode->setShaderProgram(Shaders);
@@ -227,6 +233,7 @@ void MyApp::createScene() {
     orangeTriangleNode->setMesh(TriangleMesh);
     glm::mat4 orangeMM = glm::translate(glm::vec3(-2.0f * 1.416f * 1.416f, 0.0f, -1.0f * 1.416f * 1.416f)) * glm::rotate(glm::radians(90.f), glm::vec3(0.0f, 1.0f, 0.0f));
     orangeTriangleNode->setModelMatrix(orangeMM);
+    orangeTriangleNode->setAnimationMovement(glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f)), glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::vec3(0.0f, 0.0f, 0.0f));
     orangeTriangleNode->setNormalMatrix(glm::transpose(glm::inverse(orangeMM)));
     orangeTriangleNode->setColor(orangeColor);
     orangeTriangleNode->setShaderProgram(Shaders);
@@ -238,6 +245,8 @@ void MyApp::createScene() {
     purpleTriangleNode->setMesh(TriangleMesh);
     glm::mat4 purpleMM = glm::scale(glm::vec3(1.416f, 1.0f, 1.416f));
     purpleTriangleNode->setModelMatrix(purpleMM);
+    purpleTriangleNode->setAnimationTime(2.0);
+    purpleTriangleNode->setAnimationMovement(glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f)), glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::vec3(0.0f, 0.0f, 0.0f));
     purpleTriangleNode->setNormalMatrix(glm::transpose(glm::inverse(purpleMM)));
     purpleTriangleNode->setColor(purpleColor);
     purpleTriangleNode->setShaderProgram(Shaders);
@@ -249,6 +258,8 @@ void MyApp::createScene() {
     blueTriangleNode->setMesh(TriangleMesh);
     glm::mat4 blueMM = glm::scale(glm::vec3(1.416f, 1.0f, 1.416f)) * glm::scale(glm::vec3(1.416f, 1.0f, 1.416f)) * glm::translate(glm::vec3(-2.0f, 0.0f, -2.0f)) * glm::rotate(glm::radians(-90.f), glm::vec3(0.0f, 1.0f, 0.0f));
     blueTriangleNode->setModelMatrix(blueMM);
+    blueTriangleNode->setAnimationTime(6.0f);
+    blueTriangleNode->setAnimationMovement(glm::angleAxis(glm::radians(00.0f), glm::vec3(0.0f, 0.0f, 1.0f)), glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::vec3(0.0f, 0.0f, 0.0f));
     blueTriangleNode->setNormalMatrix(glm::transpose(glm::inverse(blueMM)));
     blueTriangleNode->setColor(blueColor);
     blueTriangleNode->setShaderProgram(Shaders);
@@ -259,6 +270,7 @@ void MyApp::createScene() {
     magentaTriangleNode->setMesh(TriangleMesh);
     glm::mat4 magentaMM = glm::scale(glm::vec3(1.416f, 1.0f, 1.416f)) * glm::scale(glm::vec3(1.416f, 1.0f, 1.416f)) * glm::rotate(glm::radians(180.f), glm::vec3(0.0f, 1.0f, 0.0f));
     magentaTriangleNode->setModelMatrix(magentaMM);
+    magentaTriangleNode->setAnimationMovement(glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f)), glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::vec3(0.0f, 0.0f, 0.0f));
     magentaTriangleNode->setNormalMatrix(glm::transpose(glm::inverse(magentaMM)));
     magentaTriangleNode->setColor(magentaColor);
     magentaTriangleNode->setShaderProgram(Shaders);
@@ -268,8 +280,8 @@ void MyApp::createScene() {
 ////////////////////////////////////////////////////////////////////////// CAMERA
 
 void MyApp::createCameras() {
-    OrbitCameras[0] = new mgl::OrbitCamera(UBO_BP, true, glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    OrbitCameras[1] = new mgl::OrbitCamera(UBO_BP, false, glm::vec3(-5.0f, -5.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    OrbitCameras[0] = new mgl::OrbitCamera(UBO_BP, true, glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    OrbitCameras[1] = new mgl::OrbitCamera(UBO_BP, false, glm::vec3(5.0f, 10.0f, 5.0f), glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     activeIndex = 0;
 }
 
@@ -303,7 +315,19 @@ void MyApp::windowSizeCallback(GLFWwindow *win, int winx, int winy) {
   OrbitCameras[1]->updatePerspectiveProjectionMatrix(winx, winy);
 }
 
-void MyApp::displayCallback(GLFWwindow *win, double elapsed) { drawScene(elapsed); }
+void MyApp::displayCallback(GLFWwindow *win, double elapsed) { 
+    processAnimation(elapsed);
+    drawScene(elapsed); 
+}
+
+void MyApp::processAnimation(double elapsed) {
+    if (mgl::KeyState::getInstance().isKeyPressed(GLFW_KEY_LEFT)) {
+        SceneGraph->moveToBox(elapsed);
+    }
+    else if (mgl::KeyState::getInstance().isKeyPressed(GLFW_KEY_RIGHT)) {
+        SceneGraph->moveToShape(elapsed);
+    }
+}
 
 /////////////////////////////////////////////////////////////////////////// MAIN
 

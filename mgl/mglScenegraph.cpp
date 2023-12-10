@@ -38,17 +38,22 @@ namespace mgl
 		return this->nodes;
 	}
 
+	void SceneGraph::moveToBox(double elapsed) {
+		for (auto node : nodes) {
+			node->moveToBox(elapsed);
+		}
+	}
+
+	void SceneGraph::moveToShape(double elapsed) {
+		for (auto node : nodes) {
+			node->moveToShape(elapsed);
+		}
+	}
+
 
 	void SceneGraph::renderScene() {
-		//Problably needs to be changed
 		for (auto node : nodes) {
-			//node->getShaderProgram()->bind();
-
-			//glUniformMatrix4fv(ModelMatrixId, 1, GL_FALSE, glm::value_ptr(node->getModelMatrix()));
-
 			node->draw();
-
-			//node->getShaderProgram()->unbind();
 		}
 		
 	}
@@ -62,6 +67,7 @@ namespace mgl
 	///////////////////////////////////////////////////////////////////////// SceneNode
 	SceneNode::SceneNode(GLint modelMatrixId, GLint normalMatrixId, GLint colorId) {
 		ModelMatrix = glm::mat4(1.0f);
+		AnimatedModelMatrix = ModelMatrix;
 		ModelMatrixId = modelMatrixId;
 		NormalMatrixId = normalMatrixId;
 		ColorId = colorId;
@@ -78,10 +84,17 @@ namespace mgl
 
 	void SceneNode::setModelMatrix(glm::mat4 modelmatrix) {
 		ModelMatrix = modelmatrix;
+		AnimatedModelMatrix = ModelMatrix;
 	}
 
 	glm::mat4 SceneNode::getModelMatrix() {
 		return ModelMatrix;
+	}
+
+	void SceneNode::setAnimationMovement(glm::quat axisRotationDest, glm::quat boxRotationDest, glm::vec3 boxTranslationDest) {
+		AxisRotationDest = axisRotationDest;
+		BoxRotationDest = boxRotationDest;
+		BoxTranslationDest = boxTranslationDest;
 	}
 
 	void SceneNode::setNormalMatrix(glm::mat4 normalMatrix) {
@@ -116,10 +129,61 @@ namespace mgl
 		return shaderProgram;
 	}
 
+	void SceneNode::setAnimationTime(double time) {
+		AnimationTime = time;
+	}
+
+	void SceneNode::animate() {
+		glm::vec3 BoxTranslationCurr = glm::mix(BoxTranslationOrig, BoxTranslationDest, Accum / AnimationTime);
+
+		glm::quat AxisRotationCurr = glm::slerp(AxisRotationOrig, AxisRotationDest, (float)Accum / (float)AnimationTime);
+
+		// start rotation only half way through the movement bc why not
+		glm::quat BoxRotationCurr;
+		if (Accum > AnimationTime / 2) {
+			float num = ((float)Accum - AnimationTime / 2) / ((float)AnimationTime / 2.0f);
+			BoxRotationCurr = glm::slerp(BoxRotationOrig, BoxRotationDest, num);
+		}
+		else {
+			BoxRotationCurr = BoxRotationOrig;
+		}
+
+		AnimatedModelMatrix = glm::mat4(AxisRotationCurr) * glm::translate(BoxTranslationCurr) * ModelMatrix * glm::mat4(BoxRotationCurr);
+
+		// update for color
+		setNormalMatrix(glm::transpose(glm::inverse(AnimatedModelMatrix)));
+	}
+
+	void SceneNode::moveToBox(double elapsed) {
+		if (glm::abs(Accum - AnimationTime) < THRESHOLD) return;
+
+		if (Accum + elapsed < AnimationTime) {
+			Accum += elapsed;
+		}
+		else {
+			Accum += AnimationTime - Accum;
+		}
+
+		animate();
+	}
+
+	void SceneNode::moveToShape(double elapsed) {
+		if (glm::abs(Accum - 0.0) < THRESHOLD) return;
+
+		if (Accum - elapsed > 0.0) {
+			Accum -= elapsed;
+		}
+		else {
+			Accum -= Accum;
+		}
+
+		animate();
+	}
+
 	void SceneNode::draw() {
 		if (mesh) {
 			shaderProgram->bind();
-			glUniformMatrix4fv(ModelMatrixId, 1, GL_FALSE, glm::value_ptr(ModelMatrix));
+			glUniformMatrix4fv(ModelMatrixId, 1, GL_FALSE, glm::value_ptr(AnimatedModelMatrix));
 			glUniformMatrix4fv(NormalMatrixId, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
 			glUniform4fv(ColorId, 1, glm::value_ptr(Color));
 			mesh->draw();
