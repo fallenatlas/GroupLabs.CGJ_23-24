@@ -85,6 +85,7 @@ namespace mgl
 	void SceneNode::setModelMatrix(glm::mat4 modelmatrix) {
 		ModelMatrix = modelmatrix;
 		AnimatedModelMatrix = ModelMatrix;
+		setNormalMatrix(glm::transpose(glm::inverse(AnimatedModelMatrix)));
 	}
 
 	glm::mat4 SceneNode::getModelMatrix() {
