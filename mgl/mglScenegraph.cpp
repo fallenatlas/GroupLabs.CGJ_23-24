@@ -10,7 +10,7 @@
 namespace mgl
 {
 	SceneGraph::SceneGraph() {
-		this->nodes = std::vector<SceneNode*>();
+		this->root = nullptr;
 	}
 
 	SceneGraph::~SceneGraph() {
@@ -27,32 +27,34 @@ namespace mgl
 		return camera;
 	}
 
-	void SceneGraph::addNode(SceneNode* node) {
-		this->nodes.push_back(node);
+	void SceneGraph::addRoot(SceneNode* node) {
+		this->root = node;
 	}
 
-	std::vector <SceneNode*> SceneGraph::getNodes() {
-		return this->nodes;
+	SceneNode* SceneGraph::getRoot() {
+		return this->root;
 	}
 
 	void SceneGraph::moveToBox(double elapsed) {
-		for (auto node : nodes) {
-			node->moveToBox(elapsed);
-		}
+		root->moveToBox(elapsed);
 	}
 
 	void SceneGraph::moveToShape(double elapsed) {
-		for (auto node : nodes) {
-			node->moveToShape(elapsed);
-		}
+		root->moveToShape(elapsed);
 	}
 
+<<<<<<< HEAD
 	void SceneGraph::renderScene(double elapsed) {
 		camera->updateRotation(elapsed);
 		for (auto node : nodes) {
 			node->draw();
 		}
 		
+=======
+
+	void SceneGraph::renderScene() {
+		root->draw();
+>>>>>>> df94b12 (feat: Make scenegraph hierarchical)
 	}
 
 	void SceneGraph::drawNode(SceneNode* node) {
@@ -70,6 +72,9 @@ namespace mgl
 		ColorId = colorId;
 		mesh = nullptr;
 		shaderProgram = nullptr;
+
+		parent = nullptr;
+		children = std::vector<SceneNode*>();
 	}
 
 	SceneNode::~SceneNode() {}
@@ -148,6 +153,12 @@ namespace mgl
 	}
 
 	void SceneNode::moveToBox(double elapsed) {
+		// move children
+		for (auto child : children) {
+			child->moveToBox(elapsed);
+		}
+
+
 		if (glm::abs(Accum - AnimationTime) < THRESHOLD) return;
 
 		if (Accum + elapsed < AnimationTime) {
@@ -158,9 +169,17 @@ namespace mgl
 		}
 
 		animate();
+
+		
 	}
 
 	void SceneNode::moveToShape(double elapsed) {
+
+		// move children
+		for (auto child : children) {
+			child->moveToShape(elapsed);
+		}
+
 		if (glm::abs(Accum - 0.0) < THRESHOLD) return;
 
 		if (Accum - elapsed > 0.0) {
@@ -171,6 +190,25 @@ namespace mgl
 		}
 
 		animate();
+
+		
+	}
+
+	void SceneNode::addChild(SceneNode* node) {
+		children.push_back(node);
+		node->parent = this;
+	}
+
+	std::vector<SceneNode*> SceneNode::getChildren() {
+		return children;
+	}
+
+	void SceneNode::setParent(SceneNode* node) {
+		parent = node;
+	}
+
+	SceneNode* SceneNode::getParent() {
+		return parent;
 	}
 
 	void SceneNode::draw() {
@@ -184,6 +222,9 @@ namespace mgl
 		}
 
 		// draw children
+		for (auto child : children) {
+			child->draw();
+		}
 	}
 	
 }
