@@ -14,9 +14,7 @@ namespace mgl
 	}
 
 	SceneGraph::~SceneGraph() {
-		for (auto node : nodes) {
-			delete node;
-		}
+		delete root;
 	}
 
 	void SceneGraph::setCamera(OrbitCamera* camera) {
@@ -43,18 +41,10 @@ namespace mgl
 		root->moveToShape(elapsed);
 	}
 
-<<<<<<< HEAD
+
 	void SceneGraph::renderScene(double elapsed) {
 		camera->updateRotation(elapsed);
-		for (auto node : nodes) {
-			node->draw();
-		}
-		
-=======
-
-	void SceneGraph::renderScene() {
 		root->draw();
->>>>>>> df94b12 (feat: Make scenegraph hierarchical)
 	}
 
 	void SceneGraph::drawNode(SceneNode* node) {
