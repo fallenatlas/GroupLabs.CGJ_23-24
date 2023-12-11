@@ -30,7 +30,7 @@ class SceneNode;
 class SceneGraph {
 private:
 	OrbitCamera* camera;
-	std::vector <SceneNode*> nodes;
+	SceneNode* root;
 
 public:
 	SceneGraph();
@@ -39,8 +39,8 @@ public:
 	void setCamera(OrbitCamera* camera);
 	OrbitCamera* getCamera();
 
-	void addNode(SceneNode* node);
-	std::vector <SceneNode*> getNodes();
+	void addRoot(SceneNode* node);
+	SceneNode* getRoot();
 
 	void moveToBox(double elapsed);
 	void moveToShape(double elapsed);
@@ -62,6 +62,9 @@ private:
 	GLint NormalMatrixId;
 	glm::mat4 NormalMatrix;
 	glm::vec4 Color;
+
+	SceneNode* parent;
+	std::vector<SceneNode*> children;
 	
 	// animation destination
 	glm::quat AxisRotationDest;
@@ -106,6 +109,12 @@ public:
 	void animate();
 	void moveToBox(double elapsed);
 	void moveToShape(double elapsed);
+
+	void addChild(SceneNode* node);
+	std::vector<SceneNode*> getChildren();
+
+	void setParent(SceneNode* node);
+	SceneNode* getParent();
 
 	void draw();
 };

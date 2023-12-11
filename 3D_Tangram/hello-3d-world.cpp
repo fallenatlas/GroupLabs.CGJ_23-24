@@ -55,7 +55,7 @@ class MyApp : public mgl::App {
   void createShaderPrograms();
   void createCameras();
   void createScene();
-  void createNode(mgl::Mesh* mesh, glm::mat4 modelMatrix, glm::vec4 color, double animationTime, glm::quat axisRotationDest, glm::quat boxRotationDest, glm::vec3 boxTranslationDest);
+  void createNode(mgl::Mesh* mesh, glm::mat4 modelMatrix, glm::vec4 color, double animationTime, glm::quat axisRotationDest, glm::quat boxRotationDest, glm::vec3 boxTranslationDest, mgl::SceneNode* parent);
   void drawScene(double elapsed);
   void processAnimation(double elapsed);
   void switchCamera();
@@ -212,41 +212,50 @@ const glm::vec3 translationUp = glm::vec3(-4.0f, 0.0f, 0.0f);
 
 void MyApp::createScene() {
     SceneGraph = new mgl::SceneGraph();
+    mgl::SceneNode* parent = new mgl::SceneNode(ModelMatrixId, NormalMatrixId, ColorId);
+
+    SceneGraph->addRoot(parent);
 
     // square
-    createNode(SquareMesh, squareMM, squareColor, 6.0, zAxisRotation, squareBoxRotation, translationUp);
+    createNode(SquareMesh, squareMM, squareColor, 6.0, zAxisRotation, squareBoxRotation, translationUp, parent);
 
     // paralelogram
-    createNode(ParalelogramMesh, paralelogramMM, paralelogramColor, 3.0, zAxisRotation, paralelogramBoxRotation, paralelogramBoxTranslation + translationUp);
+    createNode(ParalelogramMesh, paralelogramMM, paralelogramColor, 3.0, zAxisRotation, paralelogramBoxRotation, paralelogramBoxTranslation + translationUp, parent);
 
     // small triangles
     // cyan
-    createNode(TriangleMesh, cyanMM, aquaColor, 8.0, zAxisRotation, cyanBoxRotation, cyanBoxTranslation + translationUp);
+    createNode(TriangleMesh, cyanMM, aquaColor, 8.0, zAxisRotation, cyanBoxRotation, cyanBoxTranslation + translationUp, parent);
 
     // orange
-    createNode(TriangleMesh, orangeMM, orangeColor, 6.0, zAxisRotation, orangeBoxRotation, orangeBoxTranslation + translationUp);
+    createNode(TriangleMesh, orangeMM, orangeColor, 6.0, zAxisRotation, orangeBoxRotation, orangeBoxTranslation + translationUp, parent);
     
     // medium triangles
     // purple
-    createNode(TriangleMesh, purpleMM, purpleColor, 2.0, zAxisRotation, purpleBoxRotation, purpleBoxTranslation + translationUp);
+    createNode(TriangleMesh, purpleMM, purpleColor, 2.0, zAxisRotation, purpleBoxRotation, purpleBoxTranslation + translationUp, parent);
 
     // big triangles
     // blue
-    createNode(TriangleMesh, blueMM, blueColor, 6.0, zAxisRotation, zeroBoxRotation, translationUp);
+    createNode(TriangleMesh, blueMM, blueColor, 6.0, zAxisRotation, zeroBoxRotation, translationUp, parent);
 
     // magenta
-    createNode(TriangleMesh, magentaMM, magentaColor, 6.0, zAxisRotation, zeroBoxRotation, translationUp);
+    createNode(TriangleMesh, magentaMM, magentaColor, 6.0, zAxisRotation, zeroBoxRotation, translationUp, parent);
 }
 
-void MyApp::createNode(mgl::Mesh *mesh, glm::mat4 modelMatrix, glm::vec4 color, double animationTime, glm::quat axisRotationDest, glm::quat boxRotationDest, glm::vec3 boxTranslationDest) {
+void MyApp::createNode(mgl::Mesh *mesh, glm::mat4 modelMatrix, glm::vec4 color, double animationTime, glm::quat axisRotationDest, glm::quat boxRotationDest, glm::vec3 boxTranslationDest, mgl::SceneNode* parent) {
+
     mgl::SceneNode* node = new mgl::SceneNode(ModelMatrixId, NormalMatrixId, ColorId);
+
+    //We are creating a root node (only happens once)
     node->setMesh(mesh);
     node->setModelMatrix(modelMatrix);
     node->setAnimationTime(animationTime);
     node->setAnimationMovement(axisRotationDest, boxRotationDest, boxTranslationDest);
     node->setColor(color);
     node->setShaderProgram(Shaders);
-    SceneGraph->addNode(node);
+    //SceneGraph->addRoot(node);
+    parent->addChild(node);
+    
+    
 }
 
 ////////////////////////////////////////////////////////////////////////// CAMERA
